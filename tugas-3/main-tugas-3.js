@@ -105,7 +105,7 @@ function main() {
 	indices_.push(...box_index);
 
 
-	// shader init
+	// shader init section ===================================== v
 	// Create .c in GPU
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, vertexShaderSource);
@@ -133,9 +133,12 @@ function main() {
 	// Link the two .o files, so together they can be a runnable program/context.
 	gl.linkProgram(shaderProgramL);
 	gl.linkProgram(shaderProgramR);
+	// shader init section ===================================== ^
+
 
 	var cur_program = '';
 	
+	// cam init section ==================================== v
 	// Interactive graphics with keyboard
 	var cameraX = 0.0;
 	var cameraY = 2.0;
@@ -166,8 +169,9 @@ function main() {
 			[0.0, 1.0, 0.0]
 	);
 	gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
+	// cam init section ==================================== ^
 
-	
+	// controller section ============================================== v
 	var freeze = false;
 	// Interactive graphics with mouse
 	function onMouseClick(event) {
@@ -250,6 +254,7 @@ function main() {
 
 	document.addEventListener("keydown", onKeydown);
 	document.addEventListener("keyup", onKeyup);
+	// controller section ============================================== ^
 	
 
 	var speedRaw = 1;
@@ -259,7 +264,7 @@ function main() {
 	var changeY = 0;
 
 
-	function renderRight(currShader, currVertices, currIndices, option){
+	function renderCurrent(currShader, currVertices, currIndices, option){
 				// Start using the context (analogy: start using the paints and the brushes)
 				gl.useProgram(currShader);
 				cur_program = option ;
@@ -341,20 +346,15 @@ function main() {
 
 				if (!freeze) {  // If it is not freezing, then animate the rectangle
 					if (changeX >= 0.5 || changeX <= -0.5) speedX = -speedX;
-					// if (changeY >= 0.5 || changeY <= -0.5) speedY = -speedY;
 					changeX = changeX + speedX;
 					changeY = changeY + speedY;
 					var modelMatrix = glMatrix.mat4.create();
-					// glMatrix.mat4.scale(modelMatrix, modelMatrix, [changeY, changeY, changeY]);
-					// glMatrix.mat4.rotate(modelMatrix, modelMatrix, changeX, [0.0, 0.0, 1.0]);   // Rotation about Z axis
-					// glMatrix.mat4.rotate(modelMatrix, modelMatrix, changeY * 2.0, [0.0, 1.0, 0.0]);   // Rotation about Y axis
-					// glMatrix.mat4.rotate(modelMatrix, modelMatrix, changeY * 10.0, [1.0, .0, .0]);   // Rotation about X axis
-					// glMatrix.mat4.translate(modelMatrix, modelMatrix, [changeX, changeY, 0.0]);
 					gl.uniformMatrix4fv(uModel, false, modelMatrix);
 					var normalModelMatrix = glMatrix.mat3.create();
 					glMatrix.mat3.normalFromMat4(normalModelMatrix, modelMatrix);
 					gl.uniformMatrix3fv(uNormalModel, false, normalModelMatrix);
 				}
+
 				gl.enable(gl.DEPTH_TEST);
 				//transparency func
 				if (option == 'r') {
@@ -379,12 +379,12 @@ function main() {
 	}
 
 	function render() {
-		gl.clearColor(0.0, 0.0, 0.0, 1.0);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		// renderLeft();
-		renderRight(shaderProgramL, vertices_left, indices_left, 'l');
-		renderRight(shaderProgramR, vertices_, indices_, 'r');
-		requestAnimationFrame(render);
+				gl.clearColor(0.0, 0.0, 0.0, 1.0);
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				// renderLeft();
+				renderCurrent(shaderProgramL, vertices_left, indices_left, 'l');
+				renderCurrent(shaderProgramR, vertices_, indices_, 'r');
+				requestAnimationFrame(render);
 	}
 	requestAnimationFrame(render);
 }
