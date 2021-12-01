@@ -234,8 +234,14 @@ function main() {
 					[cameraX, 0.0, -10],        // the point where the camera look at
 					[0.0, 1.0, 0.0]
 			);
-			if(cur_program == 'l') gl.uniformMatrix4fv(uView, false, viewMatrix);
-			if(cur_program == 'r') gl.uniformMatrix4fv(uViewR, false, viewMatrix);
+			glMatrix.mat4.lookAt(
+				viewMatrixR,
+				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
+				[cameraX, 0.0, -10],        // the point where the camera look at
+				[0.0, 1.0, 0.0]
+			);
+			// gl.uniformMatrix4fv(uView, false, viewMatrix);
+			// gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
 	}
 	function onKeyup(event) {
 			if (event.keyCode == 32) freeze = false;
@@ -256,7 +262,9 @@ function main() {
 	function renderRight(currShader, currVertices, currIndices, option){
 				// Start using the context (analogy: start using the paints and the brushes)
 				gl.useProgram(currShader);
-				cur_program = 'r';
+				cur_program = option ;
+				if (option == 'l') gl.uniformMatrix4fv(uView, false, viewMatrix);
+				if (option == 'r') gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
 						
 				// Create a linked-list for storing the vertices data
 				var vertexBuffer = gl.createBuffer();
@@ -367,7 +375,7 @@ function main() {
 				var nVertex = currIndices.length;
 				// gl.drawArrays(primitive, offset, nVertex);
 				gl.drawElements(primitive, nVertex, gl.UNSIGNED_SHORT, offset);
-				cur_program = 'r';
+				cur_program = '';
 	}
 
 	function render() {
