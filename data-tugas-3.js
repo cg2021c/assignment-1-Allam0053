@@ -170,8 +170,8 @@ var indices = [
   
       ...chair.cube_a_b, ...green, ...xp, //8
       ...chair.cube_a_c, ...green, ...xp, //9
-      ...chair.cube_a_f, ...green, ...xp, //10
       ...chair.cube_a_g, ...green, ...xp, //11
+      ...chair.cube_a_f, ...green, ...xp, //10
       
       ...chair.cube_a_a, ...green, ...xn, //12
       ...chair.cube_a_e, ...green, ...xn, //13
@@ -202,13 +202,13 @@ var indices = [
       
       ...chair.cube_b1_b, ...green, ...xp,
       ...chair.cube_b1_c, ...green, ...xp,
-      ...chair.cube_b1_f, ...green, ...xp,
       ...chair.cube_b1_g, ...green, ...xp,
+      ...chair.cube_b1_f, ...green, ...xp,
       
       ...chair.cube_b1_a, ...green, ...xn,
       ...chair.cube_b1_d, ...green, ...xn,
-      ...chair.cube_b1_e, ...green, ...xn,
       ...chair.cube_b1_h, ...green, ...xn,
+      ...chair.cube_b1_e, ...green, ...xn,
       
       ...chair.cube_b1_a, ...red, ...yp,
       ...chair.cube_b1_b, ...red, ...yp,
@@ -233,13 +233,13 @@ var indices = [
       
       ...chair.cube_b2_b, ...green, ...xp,
       ...chair.cube_b2_c, ...green, ...xp,
-      ...chair.cube_b2_f, ...green, ...xp,
       ...chair.cube_b2_g, ...green, ...xp,
+      ...chair.cube_b2_f, ...green, ...xp,
       
       ...chair.cube_b2_a, ...green, ...xn,
       ...chair.cube_b2_d, ...green, ...xn,
-      ...chair.cube_b2_e, ...green, ...xn,
       ...chair.cube_b2_h, ...green, ...xn,
+      ...chair.cube_b2_e, ...green, ...xn,
       
       ...chair.cube_b2_a, ...red, ...yp,
       ...chair.cube_b2_b, ...red, ...yp,
@@ -264,13 +264,13 @@ var indices = [
       
       ...chair.cube_b3_b, ...green, ...xp,
       ...chair.cube_b3_c, ...green, ...xp,
-      ...chair.cube_b3_f, ...green, ...xp,
       ...chair.cube_b3_g, ...green, ...xp,
+      ...chair.cube_b3_f, ...green, ...xp,
       
       ...chair.cube_b3_a, ...green, ...xn,
       ...chair.cube_b3_d, ...green, ...xn,
-      ...chair.cube_b3_e, ...green, ...xn,
       ...chair.cube_b3_h, ...green, ...xn,
+      ...chair.cube_b3_e, ...green, ...xn,
       
       ...chair.cube_b3_a, ...red, ...yp,
       ...chair.cube_b3_b, ...red, ...yp,
@@ -293,15 +293,15 @@ var indices = [
       ...chair.cube_c1_g, ...white, ...zn,
       ...chair.cube_c1_h, ...white, ...zn,
       
-      ...chair.cube_c1_b, ...green, ...xp,
-      ...chair.cube_c1_c, ...green, ...xp,
-      ...chair.cube_c1_f, ...green, ...xp,
-      ...chair.cube_c1_g, ...green, ...xp,
+      ...chair.cube_c1_b, ...green, ...xn,
+      ...chair.cube_c1_c, ...green, ...xn,
+      ...chair.cube_c1_g, ...green, ...xn,
+      ...chair.cube_c1_f, ...green, ...xn,
       
-      ...chair.cube_c1_a, ...green, ...xn,
-      ...chair.cube_c1_d, ...green, ...xn,
-      ...chair.cube_c1_e, ...green, ...xn,
-      ...chair.cube_c1_h, ...green, ...xn,
+      ...chair.cube_c1_a, ...green, ...xp,
+      ...chair.cube_c1_d, ...green, ...xp,
+      ...chair.cube_c1_h, ...green, ...xp,
+      ...chair.cube_c1_e, ...green, ...xp,
       
       ...chair.cube_c1_a, ...red, ...yp,
       ...chair.cube_c1_b, ...red, ...yp,
@@ -324,15 +324,15 @@ var indices = [
       ...chair.cube_c2_g, ...white, ...zn,
       ...chair.cube_c2_h, ...white, ...zn,
       
-      ...chair.cube_c2_b, ...green, ...xp,
-      ...chair.cube_c2_c, ...green, ...xp,
-      ...chair.cube_c2_f, ...green, ...xp,
-      ...chair.cube_c2_g, ...green, ...xp,
+      ...chair.cube_c2_b, ...green, ...xn,
+      ...chair.cube_c2_c, ...green, ...xn,
+      ...chair.cube_c2_g, ...green, ...xn,
+      ...chair.cube_c2_f, ...green, ...xn,
       
-      ...chair.cube_c2_a, ...green, ...xn,
-      ...chair.cube_c2_d, ...green, ...xn,
-      ...chair.cube_c2_e, ...green, ...xn,
-      ...chair.cube_c2_h, ...green, ...xn,
+      ...chair.cube_c2_a, ...green, ...xp,
+      ...chair.cube_c2_d, ...green, ...xp,
+      ...chair.cube_c2_h, ...green, ...xp,
+      ...chair.cube_c2_e, ...green, ...xp,
       
       ...chair.cube_c2_a, ...red, ...yp,
       ...chair.cube_c2_b, ...red, ...yp,
@@ -355,15 +355,15 @@ var indices = [
       ...chair.cube_c3_g, ...white, ...zn,
       ...chair.cube_c3_h, ...white, ...zn,
       
-      ...chair.cube_c3_b, ...green, ...xp,
-      ...chair.cube_c3_c, ...green, ...xp,
-      ...chair.cube_c3_f, ...green, ...xp,
-      ...chair.cube_c3_g, ...green, ...xp,
+      ...chair.cube_c3_b, ...green, ...xn,
+      ...chair.cube_c3_c, ...green, ...xn,
+      ...chair.cube_c3_g, ...green, ...xn,
+      ...chair.cube_c3_f, ...green, ...xn,
       
-      ...chair.cube_c3_a, ...green, ...xn,
-      ...chair.cube_c3_d, ...green, ...xn,
-      ...chair.cube_c3_e, ...green, ...xn,
-      ...chair.cube_c3_h, ...green, ...xn,
+      ...chair.cube_c3_a, ...green, ...xp,
+      ...chair.cube_c3_d, ...green, ...xp,
+      ...chair.cube_c3_h, ...green, ...xp,
+      ...chair.cube_c3_e, ...green, ...xp,
       
       ...chair.cube_c3_a, ...red, ...yp,
       ...chair.cube_c3_b, ...red, ...yp,
