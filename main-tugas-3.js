@@ -52,35 +52,35 @@ function main() {
 	var box_center = [0.0, 0.0, 0.0];
 	var box = [
 		// cube A
-		-0.1,  0.1, 0.1, ...white, ...zp, //0
-		0.1,  0.1, 0.1, ...white, ...zp, //1
-		0.1, -0.1, 0.1, ...white, ...zp, //2
-		-0.1, -0.1, 0.1, ...white, ...zp, //3
+		-0.1,  0.1, 0.1, ...white, ...zn, //0
+		0.1,  0.1, 0.1, ...white, ...zn, //1
+		0.1, -0.1, 0.1, ...white, ...zn, //2
+		-0.1, -0.1, 0.1, ...white, ...zn, //3
 
-		-0.1,  0.1, -0.1, ...white, ...zn, //4
-		0.1,  0.1, -0.1, ...white, ...zn, //5
-		0.1, -0.1, -0.1, ...white, ...zn, //6
-		-0.1, -0.1, -0.1, ...white, ...zn, //7
+		-0.1,  0.1, -0.1, ...white, ...zp, //4
+		0.1,  0.1, -0.1, ...white, ...zp, //5
+		0.1, -0.1, -0.1, ...white, ...zp, //6
+		-0.1, -0.1, -0.1, ...white, ...zp, //7
   
-		0.1,  0.1, 0.1, ...white, ...xp, //8
-		0.1, -0.1, 0.1, ...white, ...xp, //9
-		0.1, -0.1, -0.1, ...white, ...xp, //11
-		0.1,  0.1, -0.1, ...white, ...xp, //10
+		0.1,  0.1, 0.1, ...white, ...xn, //8
+		0.1, -0.1, 0.1, ...white, ...xn, //9
+		0.1, -0.1, -0.1, ...white, ...xn, //11
+		0.1,  0.1, -0.1, ...white, ...xn, //10
 		
-		-0.1,  0.1, 0.1, ...white, ...xn, //12
-		-0.1,  0.1, -0.1, ...white, ...xn, //13
-		-0.1, -0.1, -0.1, ...white, ...xn, //14
-		-0.1, -0.1, 0.1, ...white, ...xn, //15
+		-0.1,  0.1, 0.1, ...white, ...xp, //12
+		-0.1,  0.1, -0.1, ...white, ...xp, //13
+		-0.1, -0.1, -0.1, ...white, ...xp, //14
+		-0.1, -0.1, 0.1, ...white, ...xp, //15
 		
-		-0.1,  0.1, 0.1, ...white, ...yp, //16
-		0.1,  0.1, 0.1, ...white, ...yp, //17
-		0.1,  0.1, -0.1, ...white, ...yp, //18
-		-0.1,  0.1, -0.1, ...white, ...yp, //19
+		-0.1,  0.1, 0.1, ...white, ...yn, //16
+		0.1,  0.1, 0.1, ...white, ...yn, //17
+		0.1,  0.1, -0.1, ...white, ...yn, //18
+		-0.1,  0.1, -0.1, ...white, ...yn, //19
 		
-		-0.1, -0.1, 0.1, ...white, ...yn, //20
-		0.1, -0.1, 0.1, ...white, ...yn, //21
-		0.1, -0.1, -0.1, ...white, ...yn, //22
-		-0.1, -0.1, -0.1, ...white, ...yn, //23
+		-0.1, -0.1, 0.1, ...white, ...yp, //20
+		0.1, -0.1, 0.1, ...white, ...yp, //21
+		0.1, -0.1, -0.1, ...white, ...yp, //22
+		-0.1, -0.1, -0.1, ...white, ...yp, //23
 	];
 	
 	for (var it = 0; it < box.length; it += 9) {
@@ -179,6 +179,7 @@ function main() {
 
 					// Apply the shading
 					gl_FragColor = vec4(phong * vColor, 1.);
+					gl_FragColor.w = 0.5; //transparency
 			}
 	`;
 
@@ -245,7 +246,7 @@ function main() {
 	var uAmbientIntensity = gl.getUniformLocation(shaderProgram, "uAmbientIntensity");
 	// gl.uniform3fv(uAmbientConstant, [1.0, 0.5, 0.0]);    // orange light
 	gl.uniform3fv(uAmbientConstant, [1.0, 1.0, 1.0]);       // white light
-	gl.uniform1f(uAmbientIntensity, 0.2); // 20% of light
+	gl.uniform1f(uAmbientIntensity, 0.253); // 20% of light
 	// DIFFUSE
 	var uDiffuseConstant = gl.getUniformLocation(shaderProgram, "uDiffuseConstant");
 	var uLightPosition = gl.getUniformLocation(shaderProgram, "uLightPosition");
@@ -329,6 +330,8 @@ function main() {
 			if (event.keyCode == 38) cameraZ -= 0.1; // Up
 			if (event.keyCode == 39) cameraX += 0.1; // Right
 			if (event.keyCode == 40) cameraZ += 0.1; // Down
+			if (event.keyCode == 33) cameraY += 0.1; // Right
+			if (event.keyCode == 34) cameraY -= 0.1; // Down
 			lightController(event);
 			glMatrix.mat4.lookAt(
 					viewMatrix,
@@ -375,9 +378,15 @@ function main() {
 					glMatrix.mat3.normalFromMat4(normalModelMatrix, modelMatrix);
 					gl.uniformMatrix3fv(uNormalModel, false, normalModelMatrix);
 			}
-			gl.enable(gl.DEPTH_TEST);
 			gl.clearColor(0.0, 0.0, 0.0, 1.0);
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+			gl.enable(gl.DEPTH_TEST);
+			//transparency func
+			gl.depthFunc(gl.LEQUAL)
+			gl.depthMask(false);
+			gl.enable(gl.BLEND);
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
 			var primitive = gl.TRIANGLES;
 			var offset = 0;
 			var nVertex = indices_.length;
