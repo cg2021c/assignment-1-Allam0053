@@ -242,6 +242,37 @@ function main() {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices_), gl.STATIC_DRAW);
 	}
 
+	function onKeydown(event) {
+			if (event.keyCode == 32) freeze = true;
+			if (event.keyCode == 37) cameraX -= 0.1; // Left
+			if (event.keyCode == 38) cameraZ -= 0.1; // Up
+			if (event.keyCode == 39) cameraX += 0.1; // Right
+			if (event.keyCode == 40) cameraZ += 0.1; // Down
+			if (event.keyCode == 33) cameraY += 0.1; // Right
+			if (event.keyCode == 34) cameraY -= 0.1; // Down
+			lightController(event);
+			glMatrix.mat4.lookAt(
+					viewMatrix,
+					[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
+					[cameraX, 0.0, -10],        // the point where the camera look at
+					[0.0, 1.0, 0.0]
+			);
+			glMatrix.mat4.lookAt(
+				viewMatrixR,
+				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
+				[cameraX, 0.0, -10],        // the point where the camera look at
+				[0.0, 1.0, 0.0]
+			);
+			// gl.uniformMatrix4fv(uView, false, viewMatrix);
+			// gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
+	}
+	function onKeyup(event) {
+			if (event.keyCode == 32) freeze = false;
+	}
+	
+
+	document.addEventListener("keydown", onKeydown);
+	document.addEventListener("keyup", onKeyup);
 	// controller section ============================================== ^
 	
 
@@ -317,7 +348,8 @@ function main() {
 				var uNormalModel = gl.getUniformLocation(currShader, "uNormalModel");
 				gl.uniform3fv(uDiffuseConstant, [1.0, 1.0, 1.0]);   // white light
 			  if (option == 'r')	gl.uniform3fv(uLightPositionR, box_center);    // light position
-				if (option == 'l')	gl.uniform3fv(uLightPosition, box_center);
+				if (option == 'l')	gl.uniform3fv(uLightPosition, box_center);    // light position
+				if (option == 'plane')	gl.uniform3fv(uLightPositionPlane, box_center);
 
 				// Perspective projection
 				var uProjection = gl.getUniformLocation(currShader, "uProjection");
@@ -370,8 +402,9 @@ function main() {
 				gl.clearColor(0.0, 0.0, 0.0, 1.0);
 				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 				// renderLeft();
-				renderCurrent(shaderProgramL, vertices_left, indices_left, 'l');
+				renderCurrent(shaderProgramPlane, plane, indices_place, 'plane');
 				renderCurrent(shaderProgramR, vertices_, indices_, 'r');
+				renderCurrent(shaderProgramL, vertices_left, indices_left, 'l');
 				requestAnimationFrame(render);
 	}
 	requestAnimationFrame(render);

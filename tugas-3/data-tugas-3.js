@@ -445,3 +445,29 @@ var indices = [
       20 + cube_c3_i, 21 + cube_c3_i, 22 + cube_c3_i,  20 + cube_c3_i, 22 + cube_c3_i, 23 + cube_c3_i,  // Face F 
       
     ];
+
+    // color = #053053
+    /**
+     * 05 / EE -> R
+     * 30 / EE -> G
+     * 53 / EE -> B
+     * 
+     * decimal ver
+     * 5 / 255
+     * (30)H -> 3*16 + 0*1 = (48)D / 255
+     * (53)H -> 5*16 + 3*1 = (83)D / 255
+     * 
+     * color in RGB
+     * 5.0/255.0 , 48.0/255.0, 83.0/255.0
+     */
+    var plane_color = [5.0/255.0 , 48.0/255.0, 83.0/255.0];
+    var plane = [
+      20.0, -0.3, 20.0,  ...plane_color, ...yp,
+      20.0, -0.3, -20.0, ...plane_color, ...yp,
+      -20.0, -0.3, -20.0, ...plane_color, ...yp,
+      -20.0, -0.3, 20.0, ...plane_color, ...yp,
+    ];
+
+    var indices_place = [
+      0, 1, 2,     0, 2, 3,    
+    ];
