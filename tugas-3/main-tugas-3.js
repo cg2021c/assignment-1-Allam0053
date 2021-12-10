@@ -284,9 +284,17 @@ function main() {
 	function onKeydown(event) {
 			var cameraXZ;
 			if (event.keyCode == 32) freeze = true;
-			if (event.keyCode == 37) cameraXZ = rotate(0.0, 0.0, cameraX, cameraZ, -5); // Left
+			if (event.keyCode == 37) {
+				cameraXZ = rotate(0.0, 0.0, cameraX, cameraZ, -5); // Left
+				cameraX = cameraXZ[0];
+				cameraZ = cameraXZ[1];
+			} 
 			if (event.keyCode == 38) cameraZ -= 0.1; // Up
-			if (event.keyCode == 39) cameraXZ = rotate(0.0, 0.0, cameraX, cameraZ, 5); // Right
+			if (event.keyCode == 39){
+				cameraXZ = rotate(0.0, 0.0, cameraX, cameraZ, 5); // Right
+				cameraX = cameraXZ[0];
+				cameraZ = cameraXZ[1];
+			} 
 			if (event.keyCode == 40) cameraZ += 0.1; // Down
 			if (event.keyCode == 33) cameraY += 0.1; // pgup
 			if (event.keyCode == 34) cameraY -= 0.1; // pgdown
@@ -295,12 +303,8 @@ function main() {
 				else challenge4switch = true;
 			lightController(event);
 
-			
-			cameraX = cameraXZ[0];
-			cameraZ = cameraXZ[1];
-
-			lastPointOnTrackBall = getProjectionPointOnSurface(glMatrix.vec3.fromValues(cameraX, cameraY, 0));
-			glMatrix.mat4.fromQuat(rotationMatrix, computeCurrentQuat());
+			// lastPointOnTrackBall = getProjectionPointOnSurface(glMatrix.vec3.fromValues(cameraX, cameraY, 0));
+			// glMatrix.mat4.fromQuat(rotationMatrix, computeCurrentQuat());
 
 			glMatrix.mat4.lookAt(
 					viewMatrix,
