@@ -7,7 +7,7 @@ function main() {
 	 * vertices_ and indices_ is in data-tugas-3.js
 	 */
 
-	
+	var challenge4switch = false;
 
 	// copying the first obj
 	var vertices_left = new Float32Array(vertices_);
@@ -251,6 +251,9 @@ function main() {
 			if (event.keyCode == 40) cameraZ += 0.1; // Down
 			if (event.keyCode == 33) cameraY += 0.1; // pgup
 			if (event.keyCode == 34) cameraY -= 0.1; // pgdown
+			if (event.keyCode == 32) 
+				if (challenge4switch) challenge4switch = false; // space
+				else challenge4switch = true;
 			lightController(event);
 			glMatrix.mat4.lookAt(
 					viewMatrix,
@@ -349,7 +352,7 @@ function main() {
 				var uAmbientIntensity = gl.getUniformLocation(currShader, "uAmbientIntensity");
 				// gl.uniform3fv(uAmbientConstant, [1.0, 0.5, 0.0]);    // orange light
 				gl.uniform3fv(uAmbientConstant, [1.0, 1.0, 1.0]);       // white light
-				gl.uniform1f(uAmbientIntensity, 0.253); // 20% of light
+				gl.uniform1f(uAmbientIntensity, 0.253 + 0.500/*iam sorry i had to set the ambient more than (my number + 0.5) cause it's too dark*/ ); // 20% of light
 				// DIFFUSE
 				var uDiffuseConstant = gl.getUniformLocation(currShader, "uDiffuseConstant");
 				
@@ -381,6 +384,11 @@ function main() {
 					var normalModelMatrix = glMatrix.mat3.create();
 					glMatrix.mat3.normalFromMat4(normalModelMatrix, modelMatrix);
 					gl.uniformMatrix3fv(uNormalModel, false, normalModelMatrix);
+				}
+
+				if (challenge4switch) {
+					gl.uniform3fv(uDiffuseConstant, [.0, .0, .0]);   // white light / off
+					gl.uniform3fv(uSpecularConstant, [.0, .0, .0]);  // white light / off
 				}
 
 				gl.enable(gl.DEPTH_TEST);
