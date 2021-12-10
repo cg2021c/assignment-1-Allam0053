@@ -113,26 +113,33 @@ function main() {
 	gl.shaderSource(fragmentShaderL, fragmentShaderSourceL);
 	var fragmentShaderR = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShaderR, fragmentShaderSourceR);
+	var fragmentShaderPlane = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(fragmentShaderPlane, fragmentShaderSourcePlane);
 
 
 	// Compile .c into .o
 	gl.compileShader(vertexShader);
 	gl.compileShader(fragmentShaderL);
 	gl.compileShader(fragmentShaderR);
+	gl.compileShader(fragmentShaderPlane);
 
 	// Prepare a .exe shell (shader program)
 	var shaderProgramL = gl.createProgram();
 	var shaderProgramR = gl.createProgram();
+	var shaderProgramPlane = gl.createProgram();
 
 	// Put the two .o files into the shell
 	gl.attachShader(shaderProgramL, vertexShader);
 	gl.attachShader(shaderProgramL, fragmentShaderL);
 	gl.attachShader(shaderProgramR, vertexShader);
 	gl.attachShader(shaderProgramR, fragmentShaderR);
+	gl.attachShader(shaderProgramPlane, vertexShader);
+	gl.attachShader(shaderProgramPlane, fragmentShaderPlane);
 
 	// Link the two .o files, so together they can be a runnable program/context.
 	gl.linkProgram(shaderProgramL);
 	gl.linkProgram(shaderProgramR);
+	gl.linkProgram(shaderProgramPlane);
 	// shader init section ===================================== ^
 
 
@@ -146,6 +153,7 @@ function main() {
 
 	var uLightPosition = gl.getUniformLocation(shaderProgramL, "uLightPosition");
 	var uLightPositionR = gl.getUniformLocation(shaderProgramR, "uLightPosition");
+	var uLightPositionPlane = gl.getUniformLocation(shaderProgramPlane, "uLightPosition");
 
 	gl.useProgram(shaderProgramL);
 	var uView = gl.getUniformLocation(shaderProgramL, "uView");
@@ -160,7 +168,6 @@ function main() {
 
 	gl.useProgram(shaderProgramR);
 	var uViewR = gl.getUniformLocation(shaderProgramR, "uView");
-	gl.uniformMatrix4fv(uViewR, false, viewMatrix);
 	var viewMatrixR = glMatrix.mat4.create();
 	glMatrix.mat4.lookAt(
 			viewMatrixR,
@@ -169,6 +176,18 @@ function main() {
 			[0.0, 1.0, 0.0]
 	);
 	gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
+
+	
+	gl.useProgram(shaderProgramPlane);
+	var uViewPlane = gl.getUniformLocation(shaderProgramPlane, "uView");
+	var viewMatrixPlane = glMatrix.mat4.create();
+	glMatrix.mat4.lookAt(
+			viewMatrixPlane,
+			[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
+			[cameraX, 0.0, -10],        // the point where the camera look at
+			[0.0, 1.0, 0.0]
+	);
+	gl.uniformMatrix4fv(uViewPlane, false, viewMatrixPlane);
 	// cam init section ==================================== ^
 
 	// controller section ============================================== v
@@ -223,37 +242,6 @@ function main() {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices_), gl.STATIC_DRAW);
 	}
 
-	function onKeydown(event) {
-			if (event.keyCode == 32) freeze = true;
-			if (event.keyCode == 37) cameraX -= 0.1; // Left
-			if (event.keyCode == 38) cameraZ -= 0.1; // Up
-			if (event.keyCode == 39) cameraX += 0.1; // Right
-			if (event.keyCode == 40) cameraZ += 0.1; // Down
-			if (event.keyCode == 33) cameraY += 0.1; // Right
-			if (event.keyCode == 34) cameraY -= 0.1; // Down
-			lightController(event);
-			glMatrix.mat4.lookAt(
-					viewMatrix,
-					[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
-					[cameraX, 0.0, -10],        // the point where the camera look at
-					[0.0, 1.0, 0.0]
-			);
-			glMatrix.mat4.lookAt(
-				viewMatrixR,
-				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
-				[cameraX, 0.0, -10],        // the point where the camera look at
-				[0.0, 1.0, 0.0]
-			);
-			// gl.uniformMatrix4fv(uView, false, viewMatrix);
-			// gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
-	}
-	function onKeyup(event) {
-			if (event.keyCode == 32) freeze = false;
-	}
-	
-
-	document.addEventListener("keydown", onKeydown);
-	document.addEventListener("keyup", onKeyup);
 	// controller section ============================================== ^
 	
 
