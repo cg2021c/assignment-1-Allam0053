@@ -237,8 +237,9 @@ function main() {
 			box_center[2]+=0.1;
 			changeBoxPos(2, 0.1);
 		}
-		if(cur_program == 'l') gl.uniform3fv(uLightPosition, box_center);
-		if(cur_program == 'l') gl.uniform3fv(uLightPositionR, box_center);
+		// if(cur_program == 'l') gl.uniform3fv(uLightPosition, box_center);
+		// if(cur_program == 'r') gl.uniform3fv(uLightPositionR, box_center);
+		// if(cur_program == 'plane') gl.uniform3fv(uLightPositionPlane, box_center);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices_), gl.STATIC_DRAW);
 	}
 
@@ -248,8 +249,8 @@ function main() {
 			if (event.keyCode == 38) cameraZ -= 0.1; // Up
 			if (event.keyCode == 39) cameraX += 0.1; // Right
 			if (event.keyCode == 40) cameraZ += 0.1; // Down
-			if (event.keyCode == 33) cameraY += 0.1; // Right
-			if (event.keyCode == 34) cameraY -= 0.1; // Down
+			if (event.keyCode == 33) cameraY += 0.1; // pgup
+			if (event.keyCode == 34) cameraY -= 0.1; // pgdown
 			lightController(event);
 			glMatrix.mat4.lookAt(
 					viewMatrix,
@@ -259,6 +260,12 @@ function main() {
 			);
 			glMatrix.mat4.lookAt(
 				viewMatrixR,
+				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
+				[cameraX, 0.0, -10],        // the point where the camera look at
+				[0.0, 1.0, 0.0]
+			);
+			glMatrix.mat4.lookAt(
+				viewMatrixPlane,
 				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
 				[cameraX, 0.0, -10],        // the point where the camera look at
 				[0.0, 1.0, 0.0]
@@ -289,6 +296,7 @@ function main() {
 				cur_program = option ;
 				if (option == 'l') gl.uniformMatrix4fv(uView, false, viewMatrix);
 				if (option == 'r') gl.uniformMatrix4fv(uViewR, false, viewMatrixR);
+				if (option == 'p') gl.uniformMatrix4fv(uViewPlane, false, viewMatrixPlane);
 						
 				// Create a linked-list for storing the vertices data
 				var vertexBuffer = gl.createBuffer();
@@ -349,7 +357,7 @@ function main() {
 				gl.uniform3fv(uDiffuseConstant, [1.0, 1.0, 1.0]);   // white light
 			  if (option == 'r')	gl.uniform3fv(uLightPositionR, box_center);    // light position
 				if (option == 'l')	gl.uniform3fv(uLightPosition, box_center);    // light position
-				if (option == 'plane')	gl.uniform3fv(uLightPositionPlane, box_center);
+				if (option == 'p')	gl.uniform3fv(uLightPositionPlane, box_center);
 
 				// Perspective projection
 				var uProjection = gl.getUniformLocation(currShader, "uProjection");
@@ -402,7 +410,7 @@ function main() {
 				gl.clearColor(0.0, 0.0, 0.0, 1.0);
 				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 				// renderLeft();
-				renderCurrent(shaderProgramPlane, plane, indices_place, 'plane');
+				renderCurrent(shaderProgramPlane, plane, indices_place, 'p');
 				renderCurrent(shaderProgramR, vertices_, indices_, 'r');
 				renderCurrent(shaderProgramL, vertices_left, indices_left, 'l');
 				requestAnimationFrame(render);
