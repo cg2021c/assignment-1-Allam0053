@@ -198,6 +198,35 @@ function main() {
 	}
 	document.addEventListener("click", onMouseClick);
 
+	// Interactive orbital rotation with mouse using quaternion concept
+	var rotationMatrix = glMatrix.mat4.create();
+	var lastPointOnTrackBall = currentPointOnTrackBall = getProjectionPointOnSurface(glMatrix.vec3.fromValues(cameraX, cameraY, 0));
+	var lastQuat = glMatrix.quat.create();
+	function computeCurrentQuat() {
+			// Secara berkala hitung quaternion rotasi setiap ada perubahan posisi titik pointer mouse
+			var axisFromCrossProduct = glMatrix.vec3.cross(glMatrix.vec3.create(), lastPointOnTrackBall, currentPointOnTrackBall);
+			var angleFromDotProduct = Math.acos(glMatrix.vec3.dot(lastPointOnTrackBall, currentPointOnTrackBall));
+			var rotationQuat = glMatrix.quat.setAxisAngle(glMatrix.quat.create(), axisFromCrossProduct, angleFromDotProduct);
+			glMatrix.quat.normalize(rotationQuat, rotationQuat);
+			return glMatrix.quat.multiply(glMatrix.quat.create(), rotationQuat, lastQuat);
+	}
+	// Memproyeksikan pointer mouse agar jatuh ke permukaan ke virtual trackball
+	function getProjectionPointOnSurface(point) {
+			var radius = canvas.width/3;  // Jari-jari virtual trackball kita tentukan sebesar 1/3 lebar kanvas
+			var center = glMatrix.vec3.fromValues(canvas.width/2, canvas.height/2, 0);  // Titik tengah virtual trackball
+			var pointVector = glMatrix.vec3.subtract(glMatrix.vec3.create(), point, center);
+			pointVector[1] = pointVector[1] * (-1); // Flip nilai y, karena koordinat piksel makin ke bawah makin besar
+			var radius2 = radius * radius;
+			var length2 = pointVector[0] * pointVector[0] + pointVector[1] * pointVector[1];
+			if (length2 <= radius2) pointVector[2] = Math.sqrt(radius2 - length2); // Dapatkan nilai z melalui rumus Pytagoras
+			else {  // Atur nilai z sebagai 0, lalu x dan y sebagai paduan Pytagoras yang membentuk sisi miring sepanjang radius
+					pointVector[0] *= radius / Math.sqrt(length2);
+					pointVector[1] *= radius / Math.sqrt(length2);
+					pointVector[2] = 0;
+			}
+			return glMatrix.vec3.normalize(glMatrix.vec3.create(), pointVector);
+	}
+
   function changeBoxPos(xyz, mov) {
 		var index_start = 9 * 24 * 7;
 		for (var it = 0; it < box.length; it += 9) {
@@ -209,8 +238,8 @@ function main() {
 		//w
 		var index_start = 9 * 24 * 14;
 		if (event.keyCode == 87) {
-			box_center[1]+=0.1;
-			changeBoxPos(1, 0.1);
+			box_center[2]-=0.1;
+			changeBoxPos(2, -0.1);
 		} 
 		//a
 		if (event.keyCode == 65) {
@@ -219,8 +248,8 @@ function main() {
 		}
 		//s
 		if (event.keyCode == 83){
-			box_center[1]-=0.1;
-			changeBoxPos(1, -0.1);
+			box_center[2]+=0.1;
+			changeBoxPos(2, 0.1);
 		}
 		//d
 		if (event.keyCode == 68) {
@@ -229,13 +258,13 @@ function main() {
 		} 
 		//e
 		if (event.keyCode == 69) {
-			box_center[2]-=0.1;
-			changeBoxPos(2, -0.1);
+			box_center[1]+=0.1;
+			changeBoxPos(1, 0.1);
 		}
 		//q
 		if (event.keyCode == 81) {
-			box_center[2]+=0.1;
-			changeBoxPos(2, 0.1);
+			box_center[1]-=0.1;
+			changeBoxPos(1, -0.1);
 		}
 		// if(cur_program == 'l') gl.uniform3fv(uLightPosition, box_center);
 		// if(cur_program == 'r') gl.uniform3fv(uLightPositionR, box_center);
@@ -243,11 +272,21 @@ function main() {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices_), gl.STATIC_DRAW);
 	}
 
+	function rotate(cx, cy, x, y, angle) {
+		var radians = (Math.PI / 180) * angle,
+			cos = Math.cos(radians),
+			sin = Math.sin(radians),
+			nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+			ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+		return [nx, ny];
+	}
+
 	function onKeydown(event) {
+			var cameraXZ;
 			if (event.keyCode == 32) freeze = true;
-			if (event.keyCode == 37) cameraX -= 0.1; // Left
+			if (event.keyCode == 37) cameraXZ = rotate(0.0, 0.0, cameraX, cameraZ, -5); // Left
 			if (event.keyCode == 38) cameraZ -= 0.1; // Up
-			if (event.keyCode == 39) cameraX += 0.1; // Right
+			if (event.keyCode == 39) cameraXZ = rotate(0.0, 0.0, cameraX, cameraZ, 5); // Right
 			if (event.keyCode == 40) cameraZ += 0.1; // Down
 			if (event.keyCode == 33) cameraY += 0.1; // pgup
 			if (event.keyCode == 34) cameraY -= 0.1; // pgdown
@@ -255,22 +294,30 @@ function main() {
 				if (challenge4switch) challenge4switch = false; // space
 				else challenge4switch = true;
 			lightController(event);
+
+			
+			cameraX = cameraXZ[0];
+			cameraZ = cameraXZ[1];
+
+			lastPointOnTrackBall = getProjectionPointOnSurface(glMatrix.vec3.fromValues(cameraX, cameraY, 0));
+			glMatrix.mat4.fromQuat(rotationMatrix, computeCurrentQuat());
+
 			glMatrix.mat4.lookAt(
 					viewMatrix,
 					[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
-					[cameraX, 0.0, -10],        // the point where the camera look at
+					[0.0, 0.0, 0],        // the point where the camera look at
 					[0.0, 1.0, 0.0]
 			);
 			glMatrix.mat4.lookAt(
 				viewMatrixR,
 				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
-				[cameraX, 0.0, -10],        // the point where the camera look at
+				[0.0, 0.0, 0],        // the point where the camera look at
 				[0.0, 1.0, 0.0]
 			);
 			glMatrix.mat4.lookAt(
 				viewMatrixPlane,
 				[cameraX, cameraY, cameraZ],    // the location of the eye or the camera
-				[cameraX, 0.0, -10],        // the point where the camera look at
+				[0.0, 0.0, 0],        // the point where the camera look at
 				[0.0, 1.0, 0.0]
 			);
 			// gl.uniformMatrix4fv(uView, false, viewMatrix);
@@ -375,16 +422,18 @@ function main() {
 				gl.uniform3fv(uViewerPosition, [cameraX, cameraY, cameraZ]);
 				var uModel = gl.getUniformLocation(currShader, "uModel");
 
-				if (!freeze) {  // If it is not freezing, then animate the rectangle
-					if (changeX >= 0.5 || changeX <= -0.5) speedX = -speedX;
-					changeX = changeX + speedX;
-					changeY = changeY + speedY;
-					var modelMatrix = glMatrix.mat4.create();
-					gl.uniformMatrix4fv(uModel, false, modelMatrix);
-					var normalModelMatrix = glMatrix.mat3.create();
-					glMatrix.mat3.normalFromMat4(normalModelMatrix, modelMatrix);
-					gl.uniformMatrix3fv(uNormalModel, false, normalModelMatrix);
-				}
+				// Perspective projection
+				var uProjection = gl.getUniformLocation(currShader, "uProjection");
+				var perspectiveMatrix = glMatrix.mat4.create();
+				glMatrix.mat4.perspective(perspectiveMatrix, Math.PI/3, 1.0, 0.5, 10.0);
+				gl.uniformMatrix4fv(uProjection, false, perspectiveMatrix);
+        // Transformation
+        var modelMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.multiply(modelMatrix, modelMatrix, rotationMatrix);
+        gl.uniformMatrix4fv(uModel, false, modelMatrix);
+        var normalModelMatrix = glMatrix.mat3.create();
+        glMatrix.mat3.normalFromMat4(normalModelMatrix, modelMatrix);
+        gl.uniformMatrix3fv(uNormalModel, false, normalModelMatrix);
 
 				if (challenge4switch) {
 					gl.uniform3fv(uDiffuseConstant, [.0, .0, .0]);   // white light / off
