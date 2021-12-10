@@ -334,6 +334,41 @@ function main() {
 
 	document.addEventListener("keydown", onKeydown);
 	document.addEventListener("keyup", onKeyup);
+
+	var dragging;
+    function onMouseDown(event) {
+        var x = event.clientX;
+        var y = event.clientY;
+        var rect = event.target.getBoundingClientRect();
+        // When the mouse pointer is inside the frame
+        if (
+            rect.left <= x &&
+            rect.right >= x &&
+            rect.top <= y &&
+            rect.bottom >= y
+        ) {
+            dragging = true;
+        }
+        lastPointOnTrackBall = getProjectionPointOnSurface(glMatrix.vec3.fromValues(x, y, 0));
+        currentPointOnTrackBall = lastPointOnTrackBall;
+    }
+    function onMouseUp(event) {
+        dragging = false;
+        if (currentPointOnTrackBall != lastPointOnTrackBall) {
+            lastQuat = computeCurrentQuat();
+        }
+    }
+    function onMouseMove(event) {
+        if (dragging) {
+            var x = event.clientX;
+            var y = event.clientY;
+            currentPointOnTrackBall = getProjectionPointOnSurface(glMatrix.vec3.fromValues(x, y, 0));
+            glMatrix.mat4.fromQuat(rotationMatrix, computeCurrentQuat());
+        }
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
 	// controller section ============================================== ^
 	
 
